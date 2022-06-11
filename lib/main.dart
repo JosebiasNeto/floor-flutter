@@ -30,21 +30,28 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+class ItemManager{
+  Future<void> databaseInsert(Item item) async {
+    final database = await $FloorItemDatabase.databaseBuilder("item_database.db").build();
+    final itemDao = database.itemDao;
+    await itemDao.insertItem(item);
+  }
+
+  Future<List<Item>> databaseGetList() async {
+    final database = await $FloorItemDatabase.databaseBuilder("item_database.db").build();
+    final itemDao = database.itemDao;
+    return itemDao.getItens();
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
 
   List<Item> itens = [];
+  ItemManager itemManager = ItemManager();
 
-  Future<void> databaseInsert() async {
-    final itemteste = Item("arroz", false, null);
-    final database = await $FloorItemDatabase.databaseBuilder("item_database.db").build();
-    final itemDao = database.itemDao;
-    await itemDao.insertItem(itemteste);
-  }
-
-  Future<void> databaseGetList() async {
-    final database = await $FloorItemDatabase.databaseBuilder("item_database.db").build();
-    final itemDao = database.itemDao;
-    itens = await itemDao.getItens();
+  void initList() async{
+    await itemManager.databaseInsert(Item("laranja", false, null));
+    itens = await itemManager.databaseGetList();
   }
 
   void delete(Item item){
@@ -79,9 +86,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
 
-    databaseInsert();
-    databaseGetList();
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -95,7 +99,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {},
+        onPressed: () => {
+          initList()
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
