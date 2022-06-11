@@ -3,7 +3,7 @@ import 'package:floor/floor.dart';
 @entity
 class Item{
   @primaryKey
-  final int id;
+  final int? id;
   final String nome;
   late final bool checked;
 

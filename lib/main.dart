@@ -32,7 +32,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  var itens = [];
+  List<Item> itens = [];
+
+  Future<void> databaseInsert() async {
+    final itemteste = Item("arroz", false, null);
+    final database = await $FloorItemDatabase.databaseBuilder("item_database.db").build();
+    final itemDao = database.itemDao;
+    await itemDao.insertItem(itemteste);
+  }
+
+  Future<void> databaseGetList() async {
+    final database = await $FloorItemDatabase.databaseBuilder("item_database.db").build();
+    final itemDao = database.itemDao;
+    itens = await itemDao.getItens();
+  }
 
   void delete(Item item){
     setState((){
@@ -65,6 +78,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
+    databaseInsert();
+    databaseGetList();
 
     return Scaffold(
       appBar: AppBar(
